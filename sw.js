@@ -1,4 +1,4 @@
-const V='raschet-v4';
+const V='raschet-v5';
 const A=['./','index.html','css/style.css','js/engine.js','js/db.js','js/tools.js','js/app.js','manifest.webmanifest','icons/icon.svg','icons/icon-192.png','icons/icon-512.png','icons/brand.png'];
 const CDN=['cdnjs.cloudflare.com'];
 self.addEventListener('install',e=>{e.waitUntil(caches.open(V).then(c=>c.addAll(A)));self.skipWaiting()});

@@ -1,22 +1,21 @@
 (()=>{
 const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
-const V='5.0',SHEETJS='https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js';
+const V='4.0',SHEETJS='https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js';
 const TG='https://t.me/ASV_PROD',DZ='https://dzen.ru/asv_prod';
 const TOOLS=[['pH-метр','https://smol0901-jpg.github.io/ph-metr/'],['HACCP Control','https://haccp-control.netlify.app'],['HACCP Studio v8','https://smol0901-jpg.github.io/haccp-studio-v8/'],['Тестирование','https://smol0901-jpg.github.io/testing/index.html'],['Калькулятор (онлайн)','https://smol0901-jpg.github.io/calculator/'],['FlowForge 2.3','https://smol0901-jpg.github.io/Flowforge-2-3/']];
-const D={theme:'auto',accent:'#7c5cff',bg:'nova',hap:2,sound:0,size:1,shape:'round',dec:10,grp:'sp',dsep:',',deg:false,anim:'on',awake:'off',keep:'month',sci:false,mem:null,v:5};
+const D={theme:'auto',accent:'#0f7fd0',bg:'none',hap:2,sound:0,size:1,shape:'round',dec:10,grp:'sp',dsep:',',deg:false,anim:'on',awake:'off',keep:'month',sci:false,mem:null,v:4};
 let cfg={...D};try{Object.assign(cfg,JSON.parse(localStorage.getItem('cfg')))}catch(e){}
 if(!cfg.v){if(cfg.accent==='#3347d6')cfg.accent=D.accent;cfg.v=3}
 if(cfg.v<4){cfg.mem=null;cfg.v=4}
-if(cfg.v<5){cfg.bg='nova';cfg.accent=D.accent;cfg.v=5}   /* ребрендинг: новая палитра по умолчанию */
 const save=()=>{try{localStorage.setItem('cfg',JSON.stringify(cfg))}catch(e){}};
 const dot=s=>cfg.dsep==='.'?s.replace(/,/g,'.'):s;
 const fmt=n=>dot(Engine.fmt(n,cfg.dec,cfg.grp)),money=n=>dot(Engine.fmt(Math.round(n*100)/100,2,cfg.grp));
 const show=s=>cfg.dsep===','?s.replace(/\./g,','):s;
 const OPS='+−×÷^',FN=/(a?sin\(|a?cos\(|a?tan\(|ln\(|log\(|√\(|abs\(|.)$/;
 const MAIN=[['AC','c','fn'],['⌫','bs','fn'],['%','%','fn'],['÷','÷','op'],['7'],['8'],['9'],['×','×','op'],['4'],['5'],['6'],['−','−','op'],['1'],['2'],['3'],['+','+','op'],['0','0','z'],[',','.'],['=','=','eq']];
-const SCI=[['sin','sin('],['cos','cos('],['tan','tan('],['π','π'],['ln','ln('],['log','log('],['√','√('],['e','e'],['x²','^2'],['xʸ','^'],['(','('],[')',')'],['n!','!'],['1/x','1÷('],['abs','abs('],['10ˣ','10^('],['RAD','deg'],['sin⁻¹','asin('],['cos⁻¹','acos('],['tan⁻¹','atan('],['x','x'],['τ','τ'],['exp','exp('],['∛','cbrt(']];
+const SCI=[['sin','sin('],['cos','cos('],['tan','tan('],['π','π'],['ln','ln('],['log','log('],['√','√('],['e','e'],['x²','^2'],['xʸ','^'],['(','('],[')',')'],['n!','!'],['1/x','1÷('],['abs','abs('],['10ˣ','10^('],['RAD','deg'],['sin⁻¹','asin('],['cos⁻¹','acos('],['tan⁻¹','atan(']];
 const MEM=[['MC'],['MR'],['M+'],['M−'],['MS'],['ƒx','sci']];
-const SET=[['Оформление',[['theme','Тема','seg',[['auto','Авто'],['light','День'],['dark','Ночь'],['amoled','AMOLED']]],['accent','Цвет акцента','col',['#7c5cff','#22d3ee','#0e9f6e','#e0662b','#c026d3','#e11d48','#0f7fd0']],['bg','Фон','seg',[['nova','NOVA'],['none','Нет'],['aurora','Аврора'],['dusk','Закат'],['forest','Лес'],['mono','Графит']]]]],
+const SET=[['Оформление',[['theme','Тема','seg',[['auto','Авто'],['light','День'],['dark','Ночь'],['amoled','AMOLED']]],['accent','Цвет акцента','col',['#0f7fd0','#3347d6','#0e9f6e','#e0662b','#c026d3','#e11d48']],['bg','Фон','seg',[['none','Нет'],['aurora','Аврора'],['dusk','Закат'],['forest','Лес'],['mono','Графит']]]]],
 ['Отклик',[['hap','Вибрация','seg',[[0,'Выкл'],[1,'Лёгкая'],[2,'Средняя'],[3,'Сильная']]],['sound','Звук нажатий','seg',[[0,'Выкл'],[.05,'Тихий'],[.14,'Громкий']]],['anim','Анимации','sw',['off','on']]]],
 ['Клавиатура',[['size','Размер кнопок','seg',[[.88,'Компактные'],[1,'Обычные'],[1.15,'Крупные']]],['shape','Форма кнопок','seg',[['round','Мягкие'],['pill','Овал'],['square','Строгие']]]]],
 ['Расчёты',[['dec','Знаков после запятой','seg',[[10,'Авто'],[2,'2'],[4,'4'],[6,'6']]],['grp','Разряды','seg',[['sp','1 000'],['no','1000']]],['dsep','Десятичный знак','seg',[[',','Запятая'],['.','Точка']]],['deg','Углы','seg',[[false,'Радианы'],[true,'Градусы']]]]],
@@ -65,9 +64,24 @@ function preview(){
   if(!s){good='0';val=0;return good}
   try{val=Engine.calc(s,cfg.deg);good=fmt(val)}catch(e){}
   return good}
+let raf,last='',shown=0;
+/* «живые» цифры: при вводе меняющиеся знаки выезжают снизу; после «=» результат плавно докручивается до значения */
+function roll(r,txt,fin){cancelAnimationFrame(raf);
+  const off=cfg.anim==='off'||matchMedia('(prefers-reduced-motion:reduce)').matches,from=shown;
+  if(!/^[\d\s\u00a0\u202f.,−-]+$/.test(txt)||!isFinite(val)){r.textContent=txt;last=txt;return}
+  if(off){r.textContent=txt;last=txt;shown=val;return}
+  if(fin){const d=Math.min(8,(String(val).split('.')[1]||'').length),N=new Intl.NumberFormat('ru-RU',{minimumFractionDigits:d,maximumFractionDigits:d,useGrouping:cfg.grp!=='no'}),t0=performance.now(),to=val;
+    r.classList.add('pop');
+    if(from===to||Math.abs(to)>=1e15||d>cfg.dec&&cfg.dec<10){r.textContent=txt}
+    else{const step=t=>{const p=Math.min(1,(t-t0)/450);r.textContent=p<1?dot(N.format(from+(to-from)*(1-Math.pow(1-p,3)))):txt;if(p<1)raf=requestAnimationFrame(step)};step(t0)}
+    last=txt;shown=to;return}
+  let i=0;while(i<txt.length&&i<last.length&&txt[i]===last[i])i++;
+  r.textContent='';r.append(txt.slice(0,i));
+  for(const ch of txt.slice(i)){const s=document.createElement('span');s.className='d';s.textContent=ch;r.append(s)}
+  last=txt;shown=val}
 function render(err){
   const r=$('#res'),x=$('#expr');x.textContent=done?show(prev)+' =':show(expr);x.scrollLeft=x.scrollWidth;
-  r.textContent=err||(done?fmt(val):preview());r.className=err?'err':'';if(err)buzz('err');
+  const txt=err||(done?fmt(val):preview());r.className=err?'err':'';if(err)buzz('err');roll(r,txt,done&&!err);
   const n=r.textContent.length;r.style.fontSize=n>16?'1.9rem':n>11?'2.5rem':'3.4rem'}
 function equals(){if(!expr||done)return;
   try{val=Engine.calc(expr,cfg.deg);if(cfg.keep!=='off')DB.add(show(expr),fmt(val),val).catch(()=>{});
@@ -84,19 +98,16 @@ function press(k){
   const isOp=OPS.includes(k)&&k.length===1,post=k==='%'||k==='!'||k==='^2';
   if(done&&!isOp&&!post)expr='';
   done=false;if(expr.length>200)return;
-  if(k==='10^('&&/[\d.)x]$/.test(expr))expr+='×';
+  if(k==='10^('&&/[\d.)]$/.test(expr))expr+='×';
   const last=expr.slice(-1);
   if(isOp){
     if(!expr)expr=k==='−'?'−':'0'+k;
     else if(OPS.includes(last)){if(k==='−'&&last!=='−'&&last!=='+')expr+=k;else expr=expr.slice(0,-1)+k}
     else if(last==='('){if(k==='−')expr+=k}
     else expr+=k;
-  }else if(post){if(expr&&/[\d)πeτx%!^]$/.test(last))expr+=k}
+  }else if(post){if(expr&&/[\d)πe%!]$/.test(last))expr+=k}
   else if(k==='.'){const seg=expr.match(/[\d.]*$/)[0];if(seg.includes('.'))return;expr+=seg?'.':'0.'}
   else if(/^\d$/.test(k)){const seg=expr.match(/[\d.]*$/)[0];expr=seg==='0'?expr.slice(0,-1)+k:expr+k}
-  else if(k==='x'||k==='τ'){const g=expr.match(/[\d.]*$/)[0];
-    if(g&&/[\d)]$/.test(expr))expr+='×';expr+=k}
-  else if(k==='exp('){if(/[\d)x.]$/.test(last))expr+='×';expr+=k}
   else expr+=k;
   render()}
 
@@ -112,7 +123,7 @@ document.addEventListener('click',e=>{const b=e.target.closest('.pad button');if
   if(e.detail===0)press(b.dataset.k);else if(HM==='sw')buzz(b._h||'key')}); /* iOS: тик только из click-жеста */
 addEventListener('keydown',e=>{
   if(tab!=='calc'||$('dialog[open]')||e.ctrlKey||e.metaKey||e.altKey||/INPUT|SELECT/.test(document.activeElement.tagName))return;
-  const k=e.key,map={'*':'×','/':'÷','-':'−','Enter':'=','=':'=','Backspace':'bs','Escape':'c','Delete':'c',',':'.','x':'x','X':'x','τ':'τ'};
+  const k=e.key,map={'*':'×','/':'÷','-':'−','Enter':'=','=':'=','Backspace':'bs','Escape':'c','Delete':'c',',':'.'};
   if(/^[0-9.+^()!%]$/.test(k)){tick();press(k)}else if(map[k]){e.preventDefault();tick();press(map[k])}});
 let sx=null;const sc=$('.screen');
 sc.addEventListener('pointerdown',e=>sx=e.clientX);
@@ -136,7 +147,7 @@ function memory(k){const has=cfg.mem!==null&&cfg.mem!==undefined;
   save();if(expr&&!done){prev=expr;expr=toExpr(v);done=true}
   mark();render();toast('В памяти: '+fmt(cfg.mem))}
 
-function go(t){tab=t;$$('.nav [data-t]').forEach(b=>b.classList.toggle('on',b.dataset.t===t));['calc','conv','fin','dates','graph'].forEach(v=>$('#'+v).hidden=v!==t);
+function go(t){tab=t;$$('.nav [data-t]').forEach(b=>b.classList.toggle('on',b.dataset.t===t));['calc','conv','fin'].forEach(v=>$('#'+v).hidden=v!==t);
   try{history.replaceState(null,'','?tab='+t)}catch(e){}}
 $$('.nav [data-t]').forEach(b=>b.onclick=()=>{fb('fn');go(b.dataset.t)});
 
@@ -181,14 +192,13 @@ $('#dx').onclick=()=>$('#dlg').close();$('#dlg').onclick=e=>{if(e.target===$('#d
 $('#wipe').onclick=$('#hc').onclick;
 $('#reset').onclick=()=>{cfg={...D};save();apply();render();settings();toast('Настройки сброшены')};
 
-function about(){$('#ab').innerHTML=`<div class="brand"><img src="icons/nova-192.png" alt="NOVA Calc"><b>NOVA Calc · NEURAL_ARCHITECT PREMIUM++</b><small>v${V} · автор: Смолянинов Александр</small></div>
+function about(){$('#ab').innerHTML=`<div class="brand"><img src="icons/brand.png" alt="NEURAL_ARCHITECT PREMIUM++"><b>NEURAL_ARCHITECT_PREMIUM++</b><small>Расчёт v${V} · автор: Смолянинов Александр</small></div>
 <div class="links"><a href="${TG}" target="_blank" rel="noopener">Telegram: ASV_PROD</a><a href="${DZ}" target="_blank" rel="noopener">Дзен: ASV_PROD</a></div>
 <div class="acts"><button id="fbk">Написать автору</button><button id="shr">Поделиться приложением</button></div>
-<h3 class="sub">Что внутри</h3><p class="note">Калькулятор с историей и памятью · научный режим (x, exp, ∛, τ) · график y=f(x) · конвертер 12 категорий · финансы с диаграммами · дата-калькулятор. Работает офлайн.</p>
 <h3 class="sub">Другие инструменты</h3><div class="links">${TOOLS.map(([n,u])=>`<a href="${u}" target="_blank" rel="noopener">${n}</a>`).join('')}</div>`;
-  $('#fbk').onclick=async()=>{const t=`NOVA Calc v${V}\n${navigator.userAgent}\n${innerWidth}x${innerHeight}, ${standalone?'PWA':'браузер'}\n${JSON.stringify(cfg)}\nОпишите проблему:`;
+  $('#fbk').onclick=async()=>{const t=`Расчёт v${V}\n${navigator.userAgent}\n${innerWidth}x${innerHeight}, ${standalone?'PWA':'браузер'}\n${JSON.stringify(cfg)}\nОпишите проблему:`;
     try{await navigator.clipboard.writeText(t);toast('Данные скопированы — вставьте в сообщение')}catch(e){}open(TG,'_blank')};
-  $('#shr').onclick=()=>share('NOVA Calc — калькулятор, графики, конвертер, финансы, даты: '+location.href.split('?')[0]);
+  $('#shr').onclick=()=>share('Расчёт — калькулятор, конвертер, финансы: '+location.href.split('?')[0]);
   $('#about').showModal()}
 $('#abt').onclick=()=>{$('#dlg').close();about()};
 $('#ax').onclick=()=>$('#about').close();$('#about').onclick=e=>{if(e.target===$('#about'))$('#about').close()};
@@ -206,9 +216,8 @@ if('serviceWorker' in navigator){
     navigator.serviceWorker.addEventListener('controllerchange',()=>{if(had)toast('Приложение обновлено — перезапустите')})}}
 
 addEventListener('resize',()=>{if(wide())$('#drawer').hidden=false});
-const CB={fmt,money,copy,vib:()=>buzz('soft')};
-Tools.conv($('#conv'),CB);Tools.fin($('#fin'),CB);Tools.dateTool($('#dates'),CB);Tools.graph($('#graph'),CB);
+Tools.conv($('#conv'),{fmt,copy,vib:()=>buzz('soft')});Tools.fin($('#fin'),{money,copy,vib:()=>buzz('soft')});
 apply();render();
-const q=new URLSearchParams(location.search).get('tab');if(['conv','fin','dates','graph'].includes(q))go(q);
+const q=new URLSearchParams(location.search).get('tab');if(['conv','fin'].includes(q))go(q);
 if(wide())drawer(true);else DB.prune(ttl()).catch(()=>{});
 })();
