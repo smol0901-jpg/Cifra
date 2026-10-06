@@ -178,7 +178,7 @@ function graph(root,C){
   ['sin(x)/x','x^2','x^3−3x','√(x)','1/x','tan(x)','ln(x)','abs(x)−2','2^x−x^2','sin(x)+sin(3x)/3']
     .forEach(p=>{const b=tpl(`<button class="chip">${esc(p)}</button>`);b.onclick=()=>{inp.value=p;draw();C.vib()};ps.append(b)});
   function draw(){if(cv.hidden)return;
-    try{const f=Engine.fnOf(inp.value.replace(/,/g,'.'),false);
+    try{const f=Engine.fnOf(inp.value,false);
       Graph.plot(cv,f,{xmin:num(x0.value),xmax:num(x1.value)});}
     catch(e){const g=cv.getContext('2d'),dpr=devicePixelRatio||1;
       g.clearRect(0,0,cv.width/dpr,cv.height/dpr);g.font='14px system-ui';g.fillStyle='#e5484d';
