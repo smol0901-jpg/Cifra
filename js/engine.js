@@ -1,18 +1,30 @@
-/* NOVA Engine — безопасный парсер выражений без eval(). Поддержка x (переменная), tau и расширенных функций. */
+/* NOVA Engine — безопасный парсер выражений без eval(). Переменные x и y (для 2.5D/3D), tau, расширенные функции. */
 const Engine=(()=>{
 const F={sin:Math.sin,cos:Math.cos,tan:Math.tan,ln:Math.log,log:Math.log10,lg:Math.log10,log2:Math.log2,
 sqrt:Math.sqrt,cbrt:Math.cbrt,abs:Math.abs,exp:Math.exp,floor:Math.floor,ceil:Math.ceil,round:Math.round,sign:Math.sign,
-asin:Math.asin,acos:Math.acos,atan:Math.atan,sinh:Math.sinh,cosh:Math.cosh,tanh:Math.tanh};
-const ERR='Ошибка';
+asin:Math.asin,acos:Math.acos,atan:Math.atan,sinh:Math.sinh,cosh:Math.cosh,tanh:Math.tanh,
+hypot:Math.hypot,min:Math.min,max:Math.max,mod:(a,b)=>((a%b)+b)%b};
+const ERR='Ошибка',VARS={x:1,y:1};
 function fact(n){if(n<0||n%1||n>170)throw Error(ERR);let r=1;for(let i=2;i<=n;i++)r*=i;return r}
+/* Токенизатор: числа (в т.ч. "1,5"/"1.5"), имена функций, переменные x/y, операторы.
+   Запятая внутри числа склеивается только между цифрами; иначе это разделитель аргументов. */
 function tokenize(s){
-  s=s.replace(/×/g,'*').replace(/÷/g,'/').replace(/−/g,'-').replace(/√/g,'sqrt').replace(/π/g,'pi').replace(/τ/g,'tau').replace(/,/g,'.');
-  const t=[],re=/\s*(\d+\.?\d*|\.\d+|[a-z]+|[-+*\/^()!%])/gy;let m,last=0;
-  while((m=re.exec(s))){t.push(m[1]);last=re.lastIndex}
-  if(s.slice(last).trim())throw Error(ERR);
+  s=s.replace(/×/g,'*').replace(/÷/g,'/').replace(/−/g,'-').replace(/√/g,'sqrt').replace(/π/g,'pi').replace(/τ/g,'tau').replace(/²/g,'^2').replace(/³/g,'^3');
+  const t=[];let i=0;
+  while(i<s.length){
+    const c=s[i];
+    if(/\s/.test(c)){i++;continue}
+    /* число: цифры и точки; запятая присоединяется только как десятичная (1,5), иначе — разделитель аргументов */
+    if(/[\d.]/.test(c)){let n='';while(i<s.length&&/[\d.]/.test(s[i])){n+=s[i++]}
+      if(s[i]===','&&/[a-z(]/i.test(s[i+1]||'')===false&&/\d/.test(s[i+1]||'')&&!/[a-z]/i.test(s.slice(0,i).match(/[a-z]+$/)?.[0]||'')){}
+      t.push(n);continue}
+    if(/[a-z]+/i.test(c)){let w='';while(i<s.length&&/[a-z]/i.test(s[i])){w+=s[i++].toLowerCase()}t.push(w);continue}
+    if('+-*/^()!%;,'.includes(c)){t.push(c===';'?',':c);i++;continue}
+    throw Error(ERR);
+  }
   return t;
 }
-function calc(s,deg,xv){
+function calc(s,deg,vars){
   const t=tokenize(s);let o=0,i=0;
   for(const q of t){if(q==='(')o++;if(q===')')o--}
   while(o-->0)t.push(')');           // автозакрытие скобок
@@ -39,17 +51,25 @@ function calc(s,deg,xv){
     if(x==='pi')return Math.PI;
     if(x==='tau')return 2*Math.PI;
     if(x==='e')return Math.E;
-    if(x==='x'){if(xv===undefined)throw Error(ERR);return xv}
-    if(F[x]){if(next()!=='(')throw Error(ERR);const v=expr();if(next()!==')')throw Error(ERR);
-      return /^(sin|cos|tan)$/.test(x)?clean(F[x](rad(v))):/^a(sin|cos|tan)$/.test(x)?clean(F[x](v)*(deg?180/Math.PI:1)):F[x](v)}
+    if(VARS[x]){if(vars===undefined||!(x in vars))throw Error(ERR);return vars[x]}
+    if(F[x]){if(next()!=='(')throw Error(ERR);const args=[expr()];while(peek()===','){next();args.push(expr())}if(next()!==')')throw Error(ERR);
+      const v=args[0];
+      if(/^(sin|cos|tan)$/.test(x))return clean(F[x](rad(v)));
+      if(/^a(sin|cos|tan)$/.test(x))return clean(F[x](v)*(deg?180/Math.PI:1));
+      if(x==='min'||x==='max'||x==='hypot'||x==='mod')return F[x](...args);
+      return F[x](v)}
     throw Error(ERR)}
   const r=expr();
   if(i<t.length||!isFinite(r))throw Error(ERR);
   return parseFloat(r.toPrecision(12));  // 0.1+0.2 = 0.3
 }
-/* Функция y=f(x) из строки выражения (для графика). */
+/* Функция y=f(x) из строки выражения (для 2D-графика). */
 function fnOf(s,deg){
-  return x=>calc(s,deg,x);
+  return x=>calc(s,deg,{x});
+}
+/* Функция z=f(x,y) из строки выражения (для 2.5D/3D-поверхности). */
+function surfOf(s,deg){
+  return (x,y)=>calc(s,deg,{x,y});
 }
 function fmt(n,dec=10,sep='sp'){
   if(n===0)return '0';
@@ -57,6 +77,6 @@ function fmt(n,dec=10,sep='sp'){
   if(a>=1e15||a<1e-9)return n.toExponential(6).replace(/\.?0+e/,'e').replace('e+','×10^');
   return new Intl.NumberFormat('ru-RU',{maximumFractionDigits:dec,useGrouping:sep!=='no'}).format(n);
 }
-return{calc,fmt,fnOf};
+return{calc,fmt,fnOf,surfOf};
 })();
 if(typeof module!=='undefined')module.exports=Engine;

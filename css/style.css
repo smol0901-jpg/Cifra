@@ -48,14 +48,17 @@ button{border:0;cursor:pointer;touch-action:manipulation}
 @keyframes rp{from{opacity:.25;transform:scale(0)}to{opacity:0;transform:scale(30)}}
 .chips{display:flex;gap:6px;overflow-x:auto;padding:4px 0 8px;scrollbar-width:none}
 .row{display:flex;gap:8px;margin:6px 0}
-input,select,output{flex:1;min-width:0;background:var(--key);border:1px solid var(--line);border-radius:14px;padding:14px;font-size:1.3rem;display:block;width:100%}
-select{flex:0 0 38%;font-size:1.05rem}
-output{font-weight:600;min-height:3.1rem;cursor:pointer;word-break:break-all}
+input,select,output{flex:1;min-width:0;background:var(--key);border:1px solid var(--line);border-radius:14px;padding:13px 14px;font-size:1.15rem;display:block;width:100%}
+select{flex:0 0 38%;font-size:1rem;min-width:0;max-width:100%;text-overflow:ellipsis}
+output{font-weight:600;min-height:3.1rem;cursor:pointer;word-break:break-all;overflow:hidden}
+.convrow{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,38%);align-items:stretch}
+.convrow input,.convrow select,.convrow output{height:100%;font-size:1.05rem;padding:12px 10px}
 .swap{align-self:center;background:var(--op);color:var(--opfg);border-radius:999px;padding:8px 24px}
 .fields label{display:block;margin:8px 0}.fields small{color:var(--mut);display:block;margin-bottom:4px}
 .out{list-style:none;padding:0;margin:8px 0}
-.out li{display:flex;justify-content:space-between;gap:10px;padding:14px;background:var(--key);border-radius:14px;margin-top:8px;cursor:pointer}
-.out span{color:var(--mut);font-size:.95rem}
+.out li{display:flex;justify-content:space-between;align-items:baseline;gap:10px;padding:13px 14px;background:var(--key);border-radius:14px;margin-top:8px;cursor:pointer}
+.out span{color:var(--mut);font-size:.9rem;min-width:0}
+.out b{text-align:right;word-break:break-word;overflow-wrap:anywhere;font-size:1.05rem}
 #drawer{position:absolute;inset:0;z-index:5;background:var(--card);display:flex;flex-direction:column;padding:calc(env(safe-area-inset-top) + 12px) 14px 14px}
 .dh{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:8px}
 .dh span{display:flex;gap:6px;flex-wrap:wrap}
@@ -132,6 +135,7 @@ dialog::backdrop{background:#0008;backdrop-filter:blur(3px)}
 .quick button{flex:none;background:var(--key);border-radius:999px;padding:7px 13px;font-size:.8rem;color:var(--mut)}
 .quick button:active{background:var(--op);color:var(--opfg)}
 .clist li{animation:li .3s both}
+.clist li b{max-width:58%;font-size:1rem}
 @keyframes li{from{opacity:0;transform:translateY(6px)}}
 .sub{margin:14px 2px 2px;font-size:.78rem;text-transform:uppercase;letter-spacing:.07em;color:var(--mut);font-weight:600}
 .chips .chip.on{box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--eq) 45%,transparent)}
@@ -162,8 +166,9 @@ input[type=date]{min-height:48px}
 .gform input{width:100%}
 .presets{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}
 .presets .chip{font-size:.78rem;padding:6px 11px}
-.plotwrap{padding:6px;flex:1;min-height:260px;display:flex}
+.plotwrap{padding:6px;flex:1 1 auto!important;min-height:0;display:flex;background:color-mix(in srgb,var(--card) 72%,transparent);border:1px solid var(--line);border-radius:20px}
 .plotwrap canvas{width:100%;height:100%;min-height:250px;border-radius:14px;display:block}
+#graph{overflow:hidden}
 .bar.zoom{margin-top:6px}
 .bar.zoom button:first-child,.bar.zoom button:nth-child(2),.bar.zoom button:nth-child(3){min-width:44px}
 @media(prefers-reduced-motion:reduce){.clist li,.out li{animation:none!important}}

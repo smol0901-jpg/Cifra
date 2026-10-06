@@ -25,9 +25,9 @@ function conv(root,C){
   let cat='Длина';
   root.innerHTML=`<div class="chips"></div>
   <div class="card pad">
-    <div class="row"><input inputmode="decimal" value="1" aria-label="Значение"><select aria-label="Из"></select></div>
+    <div class="row convrow"><input inputmode="decimal" value="1" aria-label="Значение"><select aria-label="Из"></select></div>
     <div class="midrow"><button class="swap" aria-label="Поменять местами"><svg viewBox="0 0 24 24"><path d="M7 4L3 8l4 4M3 8h14M17 20l4-4-4-4M21 16H7"/></svg></button><span class="mlabel"></span></div>
-    <div class="row resrow"><output>—</output><select aria-label="В"></select></div>
+    <div class="row resrow convrow"><output>—</output><select aria-label="В"></select></div>
   </div>
   <div class="quick"></div>
   <div class="sub">Все единицы</div>
@@ -122,8 +122,9 @@ function dateTool(root,C){
     <ul class="out" id="do2"></ul></div>
   <div class="dt dt-age" hidden><div class="cols2">${inp('d4','Дата рождения / события')}</div><ul class="out" id="do3"></ul></div>`;
   const cs=$(root,'.chips');let mode='diff';
-  const D=id=>{const x=$('#'+id,root).value;return x?new Date(x+'T00:00:00'):NaN};
-  const out=(id,rows)=>{const u=$('#'+id,root);u.innerHTML='';
+  const el=id=>root.querySelector('#'+id);
+  const D=id=>{const x=el(id);return x&&x.value?new Date(x.value+'T00:00:00'):NaN};
+  const out=(id,rows)=>{const u=el(id);u.innerHTML='';
     rows.forEach(([l,v],i)=>{const li=document.createElement('li');li.style.animationDelay=(i*45)+'ms';
       li.innerHTML='<span></span><b></b>';li.firstChild.textContent=l;li.lastChild.textContent=v;
       li.onclick=()=>C.copy(v);u.append(li)})};
@@ -136,7 +137,7 @@ function dateTool(root,C){
       ['Рабочих дней (≈)',Math.sign(s||1)*Math.floor(Math.abs(s)*5/7)],['Выходных (≈)',Math.sign(s||1)*Math.ceil(Math.abs(s)*2/7)],
       ['Недель',(s>0?'+':'')+Math.trunc(s/7)],['Дата начала',dstr(a)],['Дата окончания',dstr(b)]])}
   function calcAdd(){const a=D('d3');if(isNaN(a))return;
-    const v=parseInt($('#dadd',root).value)||0,u=$('#dunit',root).value,sg=+$('#dsgn',root).value;
+    const v=parseInt(el('dadd').value)||0,u=el('dunit').value,sg=+el('dsgn').value;
     const b=new Date(a);
     if(u==='дней')b.setDate(b.getDate()+sg*v);else if(u==='недель')b.setDate(b.getDate()+sg*v*7);
     else if(u==='месяцев')b.setMonth(b.getMonth()+sg*v);else b.setFullYear(b.getFullYear()+sg*v);
@@ -151,10 +152,12 @@ function dateTool(root,C){
       ['Следующая годовщина',dstr(next)],['До неё осталось дней',Math.round((next-now)/864e5)]])}
   const refresh=()=>mode==='diff'?calcDiff():mode==='add'?calcAdd():calcAge();
   const setMode=n=>{mode={'Разница дат':'diff','Прибавить дни':'add','Возраст':'age'}[n];
-    $('.dt-diff',root).hidden=mode!=='diff';$('.dt-add',root).hidden=mode!=='add';$('.dt-age',root).hidden=mode!=='age';
+    $(root,'.dt-diff').hidden=mode!=='diff';$(root,'.dt-add').hidden=mode!=='add';$(root,'.dt-age').hidden=mode!=='age';
     chips(cs,CATS,n,setMode);refresh()};
-  ['d1','d2','d3','d4','dadd'].forEach(id=>{const x=$('#'+id,root);if(x)x.oninput=refresh});
-  $('#dunit',root).onchange=$('#dsgn',root).onchange=refresh;
+  /* переключение режимов по data-mode — устойчиво к любому способу вызова */
+  cs.onclick=e=>{const b=e.target.closest('.chip');if(!b)return;C.vib();setMode(b.textContent)};
+  ['d1','d2','d3','d4','dadd'].forEach(id=>{const x=el(id);if(x)x.oninput=refresh});
+  el('dunit').onchange=el('dsgn').onchange=refresh;
   chips(cs,CATS,CATS[0],n=>{C.vib();setMode(n)});refresh();
 }
 
@@ -168,21 +171,29 @@ function graph(root,C){
     </div>
     <div class="presets"></div>
   </div>
-  <div class="card plotwrap"><canvas id="gc"></canvas></div>
+  <div class="plotwrap"><canvas id="gc"></canvas></div>
   <div class="bar zoom"><button data-z=".5" aria-label="Приблизить">−</button><button id="zr">Сброс</button><button data-z="2" aria-label="Отдалить">+</button><button id="gcopy">Копировать y = f(x)</button></div>`;
-  const cv=$('#gc',root),inp=$('#gf',root),x0=$('#gx0',root),x1=$('#gx1',root),ps=$('.presets',root);
+  const el=id=>root.querySelector('#'+id);
+  const cv=el('gc'),inp=el('gf'),x0=el('gx0'),x1=el('gx1'),ps=$(root,'.presets'),pw=$(root,'.plotwrap');
   ['sin(x)/x','x^2','x^3−3x','√(x)','1/x','tan(x)','ln(x)','abs(x)−2','2^x−x^2','sin(x)+sin(3x)/3']
     .forEach(p=>{const b=tpl(`<button class="chip">${esc(p)}</button>`);b.onclick=()=>{inp.value=p;draw();C.vib()};ps.append(b)});
-  function draw(){try{const f=Engine.fnOf(inp.value.replace(/,/g,'.'),false);
+  function draw(){if(cv.hidden)return;
+    try{const f=Engine.fnOf(inp.value,false);
       Graph.plot(cv,f,{xmin:num(x0.value),xmax:num(x1.value)});}
     catch(e){const g=cv.getContext('2d'),dpr=devicePixelRatio||1;
       g.clearRect(0,0,cv.width/dpr,cv.height/dpr);g.font='14px system-ui';g.fillStyle='#e5484d';
       g.fillText('Проверьте выражение, например: sin(x)/x',16,28)}}
   inp.oninput=x0.oninput=x1.oninput=draw;
-  $$('[data-z]',root).forEach(b=>b.onclick=()=>{const z=+b.dataset.z;x0.value=+x0.value*z;x1.value=+x1.value*z;draw()});
-  $('#zr',root).onclick=()=>{x0.value=-20;x1.value=20;draw()};
-  $('#gcopy',root).onclick=()=>C.copy('y = '+inp.value);
-  new ResizeObserver(draw).observe(cv);draw();
+  $$(root,'[data-z]').forEach(b=>b.onclick=()=>{const z=+b.dataset.z;x0.value=+x0.value*z;x1.value=+x1.value*z;draw()});
+  el('zr').onclick=()=>{x0.value=-20;x1.value=20;draw()};
+  el('gcopy').onclick=()=>C.copy('y = '+inp.value);
+  /* рисуем при любом изменении размера контейнера и при входе во вкладку */
+  new ResizeObserver(()=>draw()).observe(pw);
+  const sync=()=>{const vis=!root.hidden;
+    if(vis&&cv.hidden){cv.hidden=false;requestAnimationFrame(draw)}else if(!vis)cv.hidden=true};
+  new MutationObserver(sync).observe(root,{attributes:true,attributeFilter:['hidden']});
+  cv.hidden=!root.hidden;   /* старт: вкладка скрыта — не рисуем пустой canvas */
+  if(!cv.hidden)draw();
 }
 return{conv,fin,dateTool,graph};
 })();
