@@ -1,7 +1,8 @@
-:root{--bg:#e9eef5;--card:#fff;--fg:#141b26;--mut:#667086;--key:#f0f3f8;--fn:#dce3ee;--line:#d3dae6;--eq:#0f7fd0;--ks:1;--kr:20px;--cap:64px;--u:calc((100dvh - 360px)/5);--op:color-mix(in srgb,var(--eq) 16%,var(--card));--opfg:var(--eq)}
+:root{--bg:#e9eef5;--card:#fff;--fg:#141b26;--mut:#667086;--key:#f0f3f8;--fn:#dce3ee;--line:#d3dae6;--eq:#7c5cff;--ks:1;--kr:20px;--cap:64px;--u:calc((100dvh - 360px)/5);--op:color-mix(in srgb,var(--eq) 16%,var(--card));--opfg:var(--eq)}
 :root.sm{--u:calc((100dvh - 400px)/8.1)}
 [data-theme=dark]{--bg:#0a0c10;--card:#12151b;--fg:#f1f3f8;--mut:#8a93a8;--key:#1c212a;--fn:#2a303c;--line:#272d39;--opfg:color-mix(in srgb,var(--eq) 55%,#fff)}
 [data-theme=amoled]{--bg:#000;--card:#000;--fg:#fff;--mut:#8a93a8;--key:#15171c;--fn:#23262e;--line:#23262e;--opfg:color-mix(in srgb,var(--eq) 55%,#fff)}
+[data-bg=nova] body{background:radial-gradient(55% 45% at 12% 6%,#7c5cff55,transparent),radial-gradient(45% 45% at 92% 12%,#22d3ee44,transparent),radial-gradient(60% 50% at 70% 96%,#c026d333,transparent),var(--bg)}
 [data-bg=aurora] body{background:radial-gradient(60% 50% at 15% 10%,#6d5dfc88,transparent),radial-gradient(50% 50% at 90% 20%,#19c3a888,transparent),var(--bg)}
 [data-bg=dusk] body{background:linear-gradient(160deg,#ff8a5c66,#7b3fe466 55%,var(--bg))}
 [data-bg=forest] body{background:linear-gradient(160deg,#2fa36b66,#0e5e5a66 60%,var(--bg))}
@@ -113,3 +114,56 @@ dialog::backdrop{background:#0008;backdrop-filter:blur(3px)}
 #dlg>.acts button{display:block;width:100%;background:0;border-radius:0;text-align:left;padding:15px 16px;font-size:.95rem;color:var(--fg);border-top:1px solid var(--line)}#dlg>.acts button:active{background:var(--key)}
 #wipe,#reset{color:#e5484d!important}
 #drawer .dh button{background:0;padding:8px 10px;color:var(--opfg);font-weight:600}#drawer #hc{color:#e5484d}
+
+/* ==== NOVA v5: бренд, логотип, инструменты, графики и диаграммы ==== */
+.logo{display:flex;align-items:center;gap:8px;padding-left:4px}
+.logo svg{width:30px;height:30px;border-radius:9px}
+.logo svg rect{fill:none;stroke:none}.logo svg{fill:#fff;background:linear-gradient(135deg,#6d5dfc,#8b5cf6 55%,#22d3ee)}
+.logo b{flex:none;font-size:1.15rem;font-weight:750;letter-spacing:-.02em;padding:0}
+.logo i{font-style:normal;font-weight:520;color:var(--mut)}
+.card{background:color-mix(in srgb,var(--card) 72%,transparent);border:1px solid var(--line);border-radius:20px;margin-top:4px}
+.card.pad{padding:12px}
+.midrow{display:flex;align-items:center;gap:10px;padding:2px 0}
+.midrow .swap{padding:8px;display:grid;place-items:center;border-radius:50%}
+.midrow .swap svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.mlabel{color:var(--mut);font-size:.92rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.resrow output{text-align:right;font-size:1.5rem}
+.quick{display:flex;gap:6px;overflow-x:auto;padding:6px 0 2px;scrollbar-width:none}
+.quick button{flex:none;background:var(--key);border-radius:999px;padding:7px 13px;font-size:.8rem;color:var(--mut)}
+.quick button:active{background:var(--op);color:var(--opfg)}
+.clist li{animation:li .3s both}
+@keyframes li{from{opacity:0;transform:translateY(6px)}}
+.sub{margin:14px 2px 2px;font-size:.78rem;text-transform:uppercase;letter-spacing:.07em;color:var(--mut);font-weight:600}
+.chips .chip.on{box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--eq) 45%,transparent)}
+.cols2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.di small,.gform small,.fields small{color:var(--mut);display:block;margin:0 4px 4px;font-size:.78rem}
+.di input{font-size:1rem;padding:12px}
+input[type=date]{min-height:48px}
+.dt{margin-top:2px}
+.row select{flex:0 0 auto;max-width:44%}
+#dadd{flex:1}
+.chartbox{margin-top:10px;display:flex;flex-wrap:wrap;gap:14px;align-items:center;justify-content:center;background:color-mix(in srgb,var(--card) 72%,transparent);border:1px solid var(--line);border-radius:20px;padding:14px}
+.donut{width:150px;height:150px;flex:none}
+.donut .seg{transition:stroke-dasharray .4s}
+.donut .dt{fill:var(--mut);font-size:11px;font-weight:600}
+.donut .dv{fill:var(--fg);font-size:17px;font-weight:750}
+.lg{display:grid;gap:6px;min-width:150px;flex:1}
+.lg .li{display:flex;align-items:center;gap:8px;font-size:.85rem}
+.lg .li i{width:10px;height:10px;border-radius:3px;flex:none}
+.lg .li span{flex:1;color:var(--mut);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lg .li b{font-weight:650}
+.barsv{width:min(320px,100%);height:auto}
+.barsv .axis{stroke:var(--line);stroke-width:1}
+.barsv .bar{fill:var(--eq);opacity:.85;transform-origin:center bottom;animation:gr .45s both}
+@keyframes gr{from{transform:scaleY(.02)}}
+.barsv .bl{fill:var(--mut);font-size:9px}
+.bunit{color:var(--mut);font-size:.75rem}
+.gform label{display:block;margin-bottom:8px}
+.gform input{width:100%}
+.presets{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}
+.presets .chip{font-size:.78rem;padding:6px 11px}
+.plotwrap{padding:6px;flex:1;min-height:260px;display:flex}
+.plotwrap canvas{width:100%;height:100%;min-height:250px;border-radius:14px;display:block}
+.bar.zoom{margin-top:6px}
+.bar.zoom button:first-child,.bar.zoom button:nth-child(2),.bar.zoom button:nth-child(3){min-width:44px}
+@media(prefers-reduced-motion:reduce){.clist li,.out li{animation:none!important}}
